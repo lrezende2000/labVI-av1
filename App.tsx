@@ -1,24 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { ThemeProvider } from 'styled-components'
+import { ThemeProvider } from 'styled-components';
 
-import { theme } from './src/global/theme'
+import { ToDoProvider } from './src/context/ToDoContext';
+import { UserProvider } from './src/context/UserContext';
+import { theme } from './src/global/theme';
 import { TabBar } from './src/routes';
 
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <StatusBar style='auto' />
-      <TabBar />
+      <UserProvider>
+        <ToDoProvider>
+          <TabBar />
+        </ToDoProvider>
+      </UserProvider>
     </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

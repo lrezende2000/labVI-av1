@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Platform, Vibration } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { FontAwesome, Entypo, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -41,6 +41,7 @@ function HomeScreen() {
     toggleStatus(id);
     if (!status) {
       playSound();
+      Vibration.vibrate();
     }
   }
 

@@ -35,10 +35,25 @@ export const ErrorMessage = styled.Text`
   width: 100%;
 `;
 
+export const NewAccountBtn = styled.TouchableOpacity`
+  width: 100%;
+  background-color: transparent;
+  margin-top: 5px;
+  padding: 15px;
+  border-radius: 10px;
+`;
+
+export const NewAccountText = styled.Text`
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+`;
+
 export const SubmitBtn = styled.TouchableOpacity`
   width: 100%;
   background-color: ${(props) => props.theme.primaryColor};
-  margin-top: 30px;
+  margin-top: 15px;
   padding: 15px;
   border-radius: 10px;
 `;

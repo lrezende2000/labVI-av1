@@ -4,19 +4,20 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { HomeScreen } from '../screens/HomeScreen';
 import { AddToDoScreen } from '../screens/AddToDoScreen';
-import { WelcomeScreen } from '../screens/WelcomeScreen';
+import { Login } from '../screens/Login';
 
 import { UserContext } from '../context/UserContext';
+import { CreateAccount } from '../screens/CreateAccount';
 
 const Stack = createNativeStackNavigator();
 
 function TabBar() {
-  const { user } = useContext(UserContext);
+  const { user, token } = useContext(UserContext);
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {user.name ? (
+        {token ? (
           <>
             <Stack.Screen
               name="Home"
@@ -30,11 +31,18 @@ function TabBar() {
             />
           </>
         ) : (
-          <Stack.Screen
-            name="Welcome"
-            component={WelcomeScreen}
-            options={{ headerShown: false }}
-          />
+          <>
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CreateAccount"
+              component={CreateAccount}
+              options={{ headerShown: false }}
+            />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

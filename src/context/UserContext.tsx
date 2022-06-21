@@ -1,14 +1,19 @@
 import React, { useState, createContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from '../services/api';
+import { Text } from 'react-native';
 
 interface IUser {
   name: string;
 }
 
 type UserContextType = {
-  user: IUser
-  storeUser: (name: string) => void
-  resetUser: () => void
+  user: IUser;
+  storeUser: (name: string) => void;
+  token: string;
+  storeToken: (token: string) => void;
+  resetUser: () => void;
+  resetAppState: () => Promise<void>
 }
 
 export const UserContext = createContext<UserContextType>({
@@ -16,39 +21,67 @@ export const UserContext = createContext<UserContextType>({
     name: ''
   },
   storeUser: () => { },
-  resetUser: () => { }
+  storeToken: () => { },
+  resetUser: () => { },
+  token: '',
+  resetAppState: async () => {}
 });
 
 export const UserProvider: React.FC<React.ReactNode> = ({ children }) => {
-  const [user, setUser] = useState<IUser>({ name: '' });
+  const [user, setUser] = useState<IUser>({ name: "" });
+  const [token, setToken] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const storeUser = async (name: string) => {
-    await AsyncStorage.setItem('user', JSON.stringify({ name }));
+  const storeUser = (name: string) => {
     setUser({ name });
   }
 
-  const resetUser = async () => {
-    await AsyncStorage.setItem('user', JSON.stringify({ name: '' }));
+  const resetAppState = async () => {
+    resetUser();
+    setToken('');
+    await AsyncStorage.removeItem("todo@token");
+  };
+
+  const storeToken = async (token: string) => {
+    setToken(token);
+    await AsyncStorage.setItem("todo@token", token);
+  }
+
+  const resetUser = () => {
     setUser({ name: '' });
   }
 
   useEffect(() => {
     (async () => {
-      const storedUser = await AsyncStorage.getItem('user');
+      try {
+        setLoading(true);
+        const storedToken = await AsyncStorage.getItem('todo@token');
 
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      } else {
-        setUser({ name: '' });
+        if (storedToken) {
+          setToken(storedToken);
+
+          const { data } = await api.get("/user/profile", {
+            headers: {
+              Authorization: `Bearer ${storedToken}`,
+            }
+          });
+
+          storeUser(data.user.name);
+        }
+      } catch(err) {
+        storeToken('');
+        storeUser('');
+      } finally {
+        setLoading(false);
       }
     })();
-  }, []);
+  }, [token]);
 
   return (
     <UserContext.Provider
-      value={{ user, storeUser, resetUser }}
+      value={{ user, storeUser, resetUser, token, storeToken, resetAppState }}
     >
-      {children}
+      {loading ? <Text>Carregando</Text> : children}
     </UserContext.Provider>
   );
 }

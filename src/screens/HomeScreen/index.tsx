@@ -22,8 +22,8 @@ import {
 import { theme } from '../../global/theme';
 
 function HomeScreen() {
-  const { toDoList, removeToDo, toggleStatus, resetToDo } = useContext(ToDoContext);
-  const { user, resetUser } = useContext(UserContext);
+  const { toDoList, removeToDo, toggleStatus } = useContext(ToDoContext);
+  const { user, resetAppState } = useContext(UserContext);
   const [sound, setSound] = useState<any>();
 
   const navigation = useNavigation();
@@ -37,17 +37,12 @@ function HomeScreen() {
     await sound.playAsync();
   }
 
-  const handleToggleStatus = (id: string, status: boolean) => {
+  const handleToggleStatus = (id: number, status: boolean) => {
     toggleStatus(id);
     if (!status) {
       playSound();
       Vibration.vibrate();
     }
-  }
-
-  const handleResetApp = () => {
-    resetToDo()
-    resetUser()
   }
 
   useEffect(() => {
@@ -62,8 +57,8 @@ function HomeScreen() {
     <Wrapper>
       <Container>
         <GreetingContainer>
-          <Greeting>Olá {user.name}</Greeting>
-          <TouchableOpacity onPress={() => handleResetApp()}>
+          <Greeting>Olá {user?.name}</Greeting>
+          <TouchableOpacity onPress={() => resetAppState()}>
             <Ionicons
               name="ios-exit-outline"
               size={30}
@@ -85,8 +80,8 @@ function HomeScreen() {
           renderItem={({ item }) => (
             <ToDo key={item.id}>
               <ToDoStatus
-                checked={item.checked}
-                onPress={() => handleToggleStatus(item.id, item.checked)}
+                checked={item.completed}
+                onPress={() => handleToggleStatus(item.id, item.completed)}
               >
                 <Entypo name="check" size={20} color="white" />
               </ToDoStatus>
